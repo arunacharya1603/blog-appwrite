@@ -74,7 +74,7 @@ function Header() {
             </button>
           </div>
           <ul
-            className={`flex-col left-16  lg:flex-row lg:flex ml-auto items-center lg:static absolute lg:w-auto w-[20rem] lg:bg-transparent bg-gray-500 transition-all duration-300 ${
+            className={`flex-col left-12  lg:flex-row lg:flex ml-auto items-center lg:static absolute lg:w-auto w-[17rem] lg:bg-transparent bg-gray-500 transition-all duration-300 ${
               menuOpen ? 'top-20' : 'top-[-400px]'
             }`}
           >
