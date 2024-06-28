@@ -47,7 +47,7 @@ function Header() {
     setMenuOpen(false); // Close the menu after navigation
   };
   return (
-    <header className='py-3 shadow bg-gray-500'>
+    <header className='py-3 shadow bg-stone-800'>
       <Container>
         <nav className='flex items-center justify-between'>
           <div className='mr-4'>
@@ -74,7 +74,7 @@ function Header() {
             </button>
           </div>
           <ul
-            className={`flex flex-col left-12  lg:flex-row lg:flex ml-auto items-center lg:static absolute lg:w-auto w-[17rem] lg:bg-transparent bg-gray-500 transition-all duration-300 ${
+            className={`flex flex-col left-12 text-white lg:flex-row lg:flex ml-auto items-center lg:static absolute lg:w-auto w-[17rem] lg:bg-transparent bg-stone-700 transition-all duration-300 ${
               menuOpen ? 'top-20' : 'top-[-400px]'
             }`}
           >
@@ -82,7 +82,7 @@ function Header() {
               <li key={item.name} className='lg:mr-4'>
                 <button
                   onClick={() => handleNavigation(item.slug)}
-                  className='inline-block px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'
+                  className='inline-block px-6 py-2 duration-200 hover:bg-blue-100 hover:text-stone-700 rounded-full'
                 >
                   {item.name}
                 </button>
