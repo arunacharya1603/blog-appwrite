@@ -1,9 +1,9 @@
-import React from "react";
 import appwriteService from "../appwrite/config";
 import { useState } from "react";
 import { useEffect } from "react";
 import Container from "../components/container/Container";
 import PostCard from "../components/PostCard";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -17,7 +17,7 @@ function Home() {
   }, []);
   if (posts.length === 0) {
     return (
-      <div className="w-full py-8">
+      <div className="w-full min-h-screen py-8">
         <Container>
           <div className="flex flex-wrap">
             <h1>Login to read posts</h1>
@@ -26,16 +26,29 @@ function Home() {
       </div>
     );
   }
+  const fetchMoreData = () => {
+    appwriteService.getPosts([]).then((posts) => {
+      setPosts(posts.documents);
+    });
+  };
 
   return (
-    <div className="w-full py-8">
+    <div className="w-full min-h-screen py-8">
       <Container>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div >
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={fetchMoreData}
+          hasMore={true}
+          loader={<h4>Loading...</h4>}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
           {posts.map((post) => (
             <div key={post.$id}>
               <PostCard {...post} />
             </div>
           ))}
+        </InfiniteScroll>
         </div>
       </Container>
     </div>

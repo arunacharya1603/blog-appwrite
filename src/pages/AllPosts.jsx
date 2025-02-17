@@ -1,4 +1,3 @@
-import React from "react";
 import appwriteService from "../appwrite/config";
 import { useState } from "react";
 import { useEffect } from "react";
