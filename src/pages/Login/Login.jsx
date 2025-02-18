@@ -56,9 +56,9 @@ function Login() {
                                 },
                             })}
                             placeholder="Email or Username"
-                            className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border-slate-700/75 border focus:outline-none focus:ring-1 focus:ring-green-400"
+                            className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border-slate-700/75 border focus:outline-none focus:ring-1 focus:ring-amber-800"
                         />
-                        {errors.email && <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">{errors.email.message}</p>}
+                        {errors.email && <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">{errors.email.message}</p>}
                     </div>
                     <div className="flex flex-col gap-3 relative">
                         <input
@@ -72,7 +72,7 @@ function Login() {
                                     message: 'Password must have at least 8 characters'
                                 }
                             })}
-                            className="bg-slate-900 border border-slate-700/75 text-white p-2 placeholder:text-sm placeholder:text-slate-500 rounded focus:outline-none focus:ring-1 focus:ring-green-400"
+                            className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border-slate-700/75 border focus:outline-none focus:ring-1 focus:ring-amber-800"
                         />
                         <button
                             type="button"
@@ -87,7 +87,7 @@ function Login() {
                 <CardFooter className="p-0 mt-4">
                     <Button
                         type="submit"
-                        className="w-full bg-green-400 hover:bg-green-500 text-black"
+                        className="w-full bg-amber-800 hover:bg-amber-900 text-white"
                     >
                         Login
                     </Button>
@@ -95,10 +95,10 @@ function Login() {
             </form>
             <div className="my-4 flex flex-row justify-between">
                 {/* <p className='text-center text-slate-400 text-sm' ><span className='text-green-400 cursor-pointer' onClick={() => navigate('/changepassword')} >Change Password</span></p> */}
-                <p className="text-center text-slate-400 text-sm">
+                <p className="text-center text-slate-900 text-sm">
                     Didn&apos;t remember your password?
                     <span
-                        className="text-green-400 cursor-pointer pl-2 hover:underline"
+                        className="text-amber-800 cursor-pointer pl-2 hover:underline"
                         onClick={() => navigate('/resetpassword')}
                     >
                         Forget Password
