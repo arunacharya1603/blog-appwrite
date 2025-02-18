@@ -56,9 +56,9 @@ function Signup() {
                                     return trimmedValue.length > 3 || 'Name must be at least 4 characters long';
                                 },
                             })}
-                            className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-green-400"
+                            className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-amber-800"
                         />
-                        {errors.name && <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">{errors.name.message}</p>}
+                        {errors.name && <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">{errors.name.message}</p>}
                     </div>
                     <div className="flex flex-col gap-3 relative">
                         <input 
@@ -71,9 +71,9 @@ function Signup() {
                                     return trimmedValue.length > 4 || 'Username must be at least 5 characters long';
                                 },
                             })}
-                            className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-green-400"
+                            className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-amber-800"
                         />
-                        {errors.username && <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">{errors.username.message}</p>}
+                        {errors.username && <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">{errors.username.message}</p>}
                     </div>
                     <div className="flex flex-col gap-3 relative">
                         <input 
@@ -86,9 +86,9 @@ function Signup() {
                                     message: 'Invalid email format'
                                 }
                             })}
-                            className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-green-400"
+                            className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-amber-800"
                         />
-                        {errors.email && <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">{errors.email.message}</p>}
+                        {errors.email && <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">{errors.email.message}</p>}
                     </div>
                     <div className="flex flex-col gap-3 relative">
                         <div className="relative">
@@ -103,7 +103,7 @@ function Signup() {
                                         message: 'Password must have at least 8 characters',
                                     },
                                 })}
-                                className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 pr-10 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
+                                className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 pr-10 w-full focus:outline-none focus:ring-1 focus:ring-amber-800"
                             />
                             <button
                                 type="button"
@@ -114,7 +114,7 @@ function Signup() {
                             </button>
                         </div>
                         {errors.password && (
-                            <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">
+                            <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">
                                 {errors.password.message}
                             </p>
                         )}
@@ -131,7 +131,7 @@ function Signup() {
                                     validate: value =>
                                         value === password || 'The passwords do not match'
                                 })}
-                                className="bg-slate-900 text-white p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-green-400 pr-10 w-full"
+                                className="bg-black/10 text-black p-2 rounded placeholder:text-sm placeholder:text-slate-500 border border-slate-700/75 focus:outline-none focus:ring-1 focus:ring-amber-800 pr-10 w-full"
                             />
                             <button
                                 type="button"
@@ -141,13 +141,13 @@ function Signup() {
                                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
                         </div>
-                        {errors.confirmPassword && <p className="absolute -bottom-4 right-1 text-xs text-green-400 font-medium">{errors.confirmPassword.message}</p>}
+                        {errors.confirmPassword && <p className="absolute -bottom-4 right-1 text-xs text-red-400 font-medium">{errors.confirmPassword.message}</p>}
                     </div>
                 </CardContent>
                 <CardFooter className="p-0 mt-5" >
                     <Button 
                         type="submit" 
-                        className="w-full bg-green-400 hover:bg-green-500 text-black"
+                        className="w-full bg-amber-800 hover:bg-amber-900 text-white"
                     >
                         SignUp
                     </Button>
