@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Container from "../../components/container/Container";
 import PostCard from "../../components/PostCard";
-import InfiniteScroll from "react-infinite-scroll-component";
 import HomeSkeletonCard from "./HomeSkeletonCard";
 import toast from "react-hot-toast";
 function Home() {
@@ -26,30 +25,18 @@ function Home() {
       toast.dismiss(loadingToast);
     });
   }, []);
-  const fetchMoreData = () => {
-    appwriteService.getPosts([]).then((posts) => {
-      setPosts(posts.documents);
-    });
-  };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-white/20 to-amber-600/20 py-8">
       <Container>
-        <div >
-       {!loading && <InfiniteScroll
-          dataLength={posts.length}
-          next={fetchMoreData}
-          hasMore={true}
-          loader={loading ? <HomeSkeleton /> : null}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-        >
-          {posts.map((post) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {loading ? <HomeSkeleton /> : posts.map((post) => (
             <div key={post.$id}>
               <PostCard {...post} />
             </div>
           ))}
-        </InfiniteScroll>}
         </div>
+       
       </Container>
     </div>
   );
