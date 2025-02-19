@@ -5,15 +5,13 @@ import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PropTypes from 'prop-types';
-import toast from 'react-hot-toast';
-import { ID } from "appwrite";
 
 export default function PostForm({ post }) {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
-        slug: post?.slug || "",
+        slug: post?.$id || "",
         content: post?.content || "",
         status: post?.status || "active",
       },
@@ -23,53 +21,39 @@ export default function PostForm({ post }) {
   const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    toast.promise(
-      (async () => {
-        try {
-          if (post) {
-            const file = data.image[0] ? 
-              await appwriteService.uploadFile(data.image[0])
-              : null;
+    if (post) {
+      const file = data.image[0]
+        ? await appwriteService.uploadFile(data.image[0])
+        : null;
 
-            if (file) {
-              appwriteService.deleteFile(post.featuredImage);
-            }
-
-            const dbPost = await appwriteService.updatePost(post.$id, {
-              ...data,
-              featuredImage: file ? file.$id : undefined,
-            });
-
-            if (dbPost) {
-              navigate(`/post/${dbPost.$id}`);
-            }
-          } else {
-            const file = await appwriteService.uploadFile(data.image[0]);
-            
-            if (file) {
-              const dbPost = await appwriteService.createPost({
-                ...data,
-                featuredImage: file.$id,
-                userId: userData.$id,
-                $id: ID.unique(),
-              });
-
-              if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error saving post:', error);
-          throw error;
-        }
-      })(),
-      {
-        loading: 'Saving post...',
-        success: post ? 'Post updated successfully!' : 'Post created successfully!',
-        error: 'Could not save post'
+      if (file) {
+        appwriteService.deleteFile(post.featuredImage);
       }
-    );
+
+      const dbPost = await appwriteService.updatePost(post.$id, {
+        ...data,
+        featuredImage: file ? file.$id : undefined,
+      });
+
+      if (dbPost) {
+        navigate(`/post/${dbPost.$id}`);
+      }
+    } else {
+      const file = await appwriteService.uploadFile(data.image[0]);
+
+      if (file) {
+        const fileId = file.$id;
+        data.featuredImage = fileId;
+        const dbPost = await appwriteService.createPost({
+          ...data,
+          userId: userData.$id,
+        });
+
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`);
+        }
+      }
+    }
   };
 
   const slugTransform = useCallback((value) => {
@@ -156,12 +140,12 @@ export default function PostForm({ post }) {
 }
 
 PostForm.propTypes = {
-    post: PropTypes.shape({
-        title: PropTypes.string,
-        $id: PropTypes.string,
-        content: PropTypes.string,
-        status: PropTypes.string,
-        featuredImage: PropTypes.string,
-        slug: PropTypes.string
-    })
+  post: PropTypes.shape({
+    title: PropTypes.string,
+    $id: PropTypes.string,
+    content: PropTypes.string,
+    status: PropTypes.string,
+    featuredImage: PropTypes.string,
+    slug: PropTypes.string
+  })
 };
