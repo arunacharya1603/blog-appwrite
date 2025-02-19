@@ -5,7 +5,6 @@ import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PropTypes from 'prop-types';
-import imageCompression from 'browser-image-compression';
 import toast from 'react-hot-toast';
 import { ID } from "appwrite";
 
@@ -27,21 +26,9 @@ export default function PostForm({ post }) {
     toast.promise(
       (async () => {
         try {
-          const options = {
-            maxSizeMB: 1,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true
-          };
-
           if (post) {
             const file = data.image[0] ? 
-              await imageCompression(data.image[0], options)
-                .then(compressedBlob => {
-                  return new File([compressedBlob], data.image[0].name, {
-                    type: data.image[0].type
-                  });
-                })
-                .then(compressedFile => appwriteService.uploadFile(compressedFile))
+              await appwriteService.uploadFile(data.image[0])
               : null;
 
             if (file) {
@@ -57,17 +44,12 @@ export default function PostForm({ post }) {
               navigate(`/post/${dbPost.$id}`);
             }
           } else {
-            const compressedBlob = await imageCompression(data.image[0], options);
-            const compressedFile = new File([compressedBlob], data.image[0].name, {
-              type: data.image[0].type
-            });
-            const file = await appwriteService.uploadFile(compressedFile);
-
+            const file = await appwriteService.uploadFile(data.image[0]);
+            
             if (file) {
-              const fileId = file.$id;
-              data.featuredImage = fileId;
               const dbPost = await appwriteService.createPost({
                 ...data,
+                featuredImage: file.$id,
                 userId: userData.$id,
                 $id: ID.unique(),
               });
@@ -78,7 +60,7 @@ export default function PostForm({ post }) {
             }
           }
         } catch (error) {
-          console.error('Error uploading image:', error);
+          console.error('Error saving post:', error);
           throw error;
         }
       })(),
