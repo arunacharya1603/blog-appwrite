@@ -4,13 +4,17 @@ import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import PropTypes from 'prop-types';
+import imageCompression from 'browser-image-compression';
+import toast from 'react-hot-toast';
+import { ID } from "appwrite";
 
 export default function PostForm({ post }) {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
-        slug: post?.$id || "",
+        slug: post?.slug || "",
         content: post?.content || "",
         status: post?.status || "active",
       },
@@ -20,39 +24,70 @@ export default function PostForm({ post }) {
   const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    if (post) {
-      const file = data.image[0]
-        ? await appwriteService.uploadFile(data.image[0])
-        : null;
+    toast.promise(
+      (async () => {
+        try {
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+          };
 
-      if (file) {
-        appwriteService.deleteFile(post.featuredImage);
-      }
+          if (post) {
+            const file = data.image[0] ? 
+              await imageCompression(data.image[0], options)
+                .then(compressedBlob => {
+                  return new File([compressedBlob], data.image[0].name, {
+                    type: data.image[0].type
+                  });
+                })
+                .then(compressedFile => appwriteService.uploadFile(compressedFile))
+              : null;
 
-      const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data,
-        featuredImage: file ? file.$id : undefined,
-      });
+            if (file) {
+              appwriteService.deleteFile(post.featuredImage);
+            }
 
-      if (dbPost) {
-        navigate(`/post/${dbPost.$id}`);
-      }
-    } else {
-      const file = await appwriteService.uploadFile(data.image[0]);
+            const dbPost = await appwriteService.updatePost(post.$id, {
+              ...data,
+              featuredImage: file ? file.$id : undefined,
+            });
 
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id,
-        });
+            if (dbPost) {
+              navigate(`/post/${dbPost.$id}`);
+            }
+          } else {
+            const compressedBlob = await imageCompression(data.image[0], options);
+            const compressedFile = new File([compressedBlob], data.image[0].name, {
+              type: data.image[0].type
+            });
+            const file = await appwriteService.uploadFile(compressedFile);
 
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`);
+            if (file) {
+              const fileId = file.$id;
+              data.featuredImage = fileId;
+              const dbPost = await appwriteService.createPost({
+                ...data,
+                userId: userData.$id,
+                $id: ID.unique(),
+              });
+
+              if (dbPost) {
+                navigate(`/post/${dbPost.$id}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          throw error;
         }
+      })(),
+      {
+        loading: 'Saving post...',
+        success: post ? 'Post updated successfully!' : 'Post created successfully!',
+        error: 'Could not save post'
       }
-    }
+    );
   };
 
   const slugTransform = useCallback((value) => {
@@ -137,3 +172,14 @@ export default function PostForm({ post }) {
     </form>
   );
 }
+
+PostForm.propTypes = {
+    post: PropTypes.shape({
+        title: PropTypes.string,
+        $id: PropTypes.string,
+        content: PropTypes.string,
+        status: PropTypes.string,
+        featuredImage: PropTypes.string,
+        slug: PropTypes.string
+    })
+};
