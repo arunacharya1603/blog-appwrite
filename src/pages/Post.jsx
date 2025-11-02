@@ -9,6 +9,7 @@ import {useSelector } from "react-redux"
 
 function Post() {
   const [post, setPost] = useState(null)
+  const [loading, setLoading] = useState(true)
   const {slug} = useParams()
   const navigate = useNavigate()
   const userData = useSelector((state) => state.auth.userData)
@@ -16,13 +17,18 @@ function Post() {
 
   useEffect(() => {
     if (slug) {
+      setLoading(true)
       appwriteService.getPost(slug).then((post) => {
         if (post) {
           setPost(post)
-        }else {
+        } else {
           navigate("/")
         }
+      }).finally(() => {
+        setLoading(false)
       })
+    } else {
+      navigate("/")
     }
   }, [slug, navigate])
 
@@ -38,9 +44,19 @@ function Post() {
     <div className="py-8">
       <Container>
         <div className='w-full flex justify-center mb-4 relative border rounded-xl p-2'>
-          <img src={appwriteService.getFilePreview(post.featuredImage)} alt={post.title} className='rounded-xl' />
+          {post.featuredImage && (
+            <img 
+              src={appwriteService.getFilePreview(post.featuredImage)} 
+              alt={post.title} 
+              className='rounded-xl object-cover'
+              onError={(e) => {
+                console.error('Error loading image:', e);
+                e.target.style.display = 'none';
+              }}
+            />
+          )}
           { isAuthor && (
-            <div className="absolute-right-6 top-6">
+            <div className="absolute right-6 top-6">
               <Link to={`/edit-post/${post.$id}`}>
                 <Button bgColor="bg-green-500" className="mr-3">Edit</Button>
               </Link>

@@ -14,6 +14,7 @@ import AllPosts from "./pages/AllPosts";
 import AuthTabs from './pages/Login/AuthTabs';
 import ErrorBoundary from './ErrorBoundary.jsx'
 import ErrorPage from './pages/error/Error.jsx'
+import ForgetPassword from './pages/Login/ForgetPassword.jsx'
 
 const router = createBrowserRouter([
     {
@@ -33,14 +34,14 @@ const router = createBrowserRouter([
                     </AuthLayout>
                 ),
             },
-            // {
-            //     path: "/signup",
-            //     element: (
-            //         <AuthLayout authentication={false}>
-            //             <Signup />
-            //         </AuthLayout>
-            //     ),
-            // },
+            {
+                path: "/forget-password",
+                element: (
+                    <AuthLayout authentication={false}>
+                        <ForgetPassword />
+                    </AuthLayout>
+                ),
+            },
             {
                 path: "/all-posts",
                 element: (

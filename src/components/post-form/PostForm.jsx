@@ -112,12 +112,16 @@ export default function PostForm({ post }) {
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", { required: !post })}
         />
-        {post && (
+        {post && post.featuredImage && (
           <div className="w-full mb-4">
             <img
               src={appwriteService.getFilePreview(post.featuredImage)}
               alt={post.title}
-              className="rounded-lg"
+              className="rounded-lg max-w-full h-auto"
+              onError={(e) => {
+                console.error('Error loading image preview:', e);
+                e.target.style.display = 'none';
+              }}
             />
           </div>
         )}

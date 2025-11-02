@@ -99,7 +99,7 @@ function Login() {
                     Didn&apos;t remember your password?
                     <span
                         className="text-amber-800 cursor-pointer pl-2 hover:underline"
-                        onClick={() => navigate('/resetpassword')}
+                        onClick={() => navigate('/forget-password')}
                     >
                         Forget Password
                     </span>

@@ -123,10 +123,45 @@ export class Service{
     }
 
     getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
-            fileId
-        )
+        try {
+            if (!fileId) {
+                return null;
+            }
+            
+            // Check if fileId is already a full URL (for external images)
+            if (fileId.startsWith('http://') || fileId.startsWith('https://')) {
+                return fileId;
+            }
+            
+            // Use getFileView instead of getFilePreview to avoid transformation restrictions
+            // getFileView returns the raw file without transformations and works on all plans
+            const result = this.bucket.getFileView(
+                conf.appwriteBucketId,
+                fileId
+            );
+            
+            // getFileView returns a URL that can be used directly
+            // Try different ways to get the URL string
+            if (result) {
+                // If it has a href property (URL object)
+                if (result.href) {
+                    return result.href;
+                }
+                // If it has a toString method
+                if (result.toString && typeof result.toString === 'function') {
+                    return result.toString();
+                }
+                // If it's already a string
+                if (typeof result === 'string') {
+                    return result;
+                }
+            }
+            
+            return null;
+        } catch (error) {
+            console.log("Appwrite service :: getFilePreview :: error", error);
+            return null;
+        }
     }
 }
 
