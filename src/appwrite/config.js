@@ -133,33 +133,56 @@ export class Service{
                 return fileId;
             }
             
-            // Use getFileView instead of getFilePreview to avoid transformation restrictions
-            // getFileView returns the raw file without transformations and works on all plans
-            const result = this.bucket.getFileView(
+            // Log for debugging in production
+            console.log('Getting file preview for ID:', fileId);
+            console.log('Bucket ID:', conf.appwriteBucketId);
+            console.log('Project ID:', conf.appwriteProjectId);
+            
+            // getFileView returns a URL object directly
+            // No need for await as it's synchronous
+            const fileUrl = this.bucket.getFileView(
                 conf.appwriteBucketId,
                 fileId
             );
             
-            // getFileView returns a URL that can be used directly
-            // Try different ways to get the URL string
-            if (result) {
-                // If it has a href property (URL object)
-                if (result.href) {
-                    return result.href;
-                }
-                // If it has a toString method
-                if (result.toString && typeof result.toString === 'function') {
-                    return result.toString();
-                }
-                // If it's already a string
-                if (typeof result === 'string') {
-                    return result;
-                }
+            // Convert URL object to string
+            const urlString = fileUrl.href || fileUrl.toString();
+            console.log('Generated file URL:', urlString);
+            
+            return urlString;
+            
+        } catch (error) {
+            console.error("Appwrite service :: getFilePreview :: error", error);
+            console.error("Failed to get preview for fileId:", fileId);
+            console.error("Bucket ID:", conf.appwriteBucketId);
+            console.error("Make sure bucket permissions are set to 'Any' for read access");
+            return null;
+        }
+    }
+    
+    // Alternative method using getFileDownload which might work better in production
+    getFileDownload(fileId){
+        try {
+            if (!fileId) {
+                return null;
             }
             
-            return null;
+            // Check if fileId is already a full URL (for external images)
+            if (fileId.startsWith('http://') || fileId.startsWith('https://')) {
+                return fileId;
+            }
+            
+            // getFileDownload returns a URL for downloading the file
+            const fileUrl = this.bucket.getFileDownload(
+                conf.appwriteBucketId,
+                fileId
+            );
+            
+            return fileUrl.href || fileUrl.toString();
+            
         } catch (error) {
-            console.log("Appwrite service :: getFilePreview :: error", error);
+            console.error("Appwrite service :: getFileDownload :: error", error);
+            console.error("Failed to get download URL for fileId:", fileId);
             return null;
         }
     }

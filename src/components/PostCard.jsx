@@ -3,32 +3,65 @@ import appwriteservice from "../appwrite/config.js"
 import PropTypes from 'prop-types'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { useState, useEffect } from 'react';
 
 function PostCard({
     $id, title, featuredImage
 }) {
-  const filePreview = featuredImage ? appwriteservice.getFilePreview(featuredImage) : null;
+  const [imageUrl, setImageUrl] = useState(null);
+  const [imageError, setImageError] = useState(false);
+  
+  useEffect(() => {
+    if (featuredImage) {
+      // Try to get the image URL
+      const url = appwriteservice.getFilePreview(featuredImage);
+      if (url) {
+        setImageUrl(url);
+        // Preload the image to check if it's accessible
+        const img = new Image();
+        img.onload = () => {
+          console.log(`✅ Image loaded successfully for "${title}"`);
+        };
+        img.onerror = () => {
+          console.error(`❌ Failed to load image for "${title}":`, url);
+          console.error('Featured Image ID:', featuredImage);
+          // Try the download URL as fallback
+          const downloadUrl = appwriteservice.getFileDownload(featuredImage);
+          if (downloadUrl && downloadUrl !== url) {
+            console.log('Trying download URL as fallback:', downloadUrl);
+            setImageUrl(downloadUrl);
+          } else {
+            setImageError(true);
+          }
+        };
+        img.src = url;
+      }
+    }
+  }, [featuredImage, title]);
   
   return (
     <Link to={`/post/${$id}`} className='block'>
         <div className='w-full h-full bg-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300'>
         <div className='w-full h-48 bg-gray-200'>
-            {filePreview ? (
+            {imageUrl && !imageError ? (
               <LazyLoadImage 
-                src={filePreview} 
+                src={imageUrl} 
                 alt={title} 
                 className='w-full h-full object-cover'
                 wrapperClassName='w-full h-full'
                 effect="blur"
                 placeholder={<div className="w-full h-full bg-gray-200 animate-pulse" />}
                 onError={(e) => {
-                  console.error(`Failed to load image for "${title}":`, filePreview);
+                  console.error(`LazyLoadImage failed for "${title}":`, imageUrl);
+                  setImageError(true);
                   e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2RkZCIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBzdHlsZT0iZmlsbDojOTk5O2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE3cHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+SW1hZ2Ugbm90IGF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=';
                 }}
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">No Image</span>
+                <span className="text-gray-500">
+                  {imageError ? 'Image unavailable' : 'No Image'}
+                </span>
               </div>
             )}
         </div>
